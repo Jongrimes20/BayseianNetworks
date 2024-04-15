@@ -1,18 +1,28 @@
 from variable import Variable
 from typing import Dict, List
+from probFactors import Variable, Prob
 from probGraphicalModels import BeliefNetwork
 from probStochSim import RejectionSampling
-from probFactors import Variable, Prob
 from probVE import VE
-from os import path #to connect to child jsons
+from os import path
 import json
 
-
 def perform_exact_inference(model: BeliefNetwork, Q:Variable, E: Dict[Variable, int], ordering: List[Variable]) -> Dict[int, float]:
-    # Assume VE is defined and imported
+    """ Computes P(Q | E) on a Bayesian Network using variable elimination
+        Arguments:
+            model, the Bayesian Network
+            Q, the query variable
+            E, the evidence
+            ordering, the order in which variables are eliminated
+        
+        Returns
+            result, a dict mapping each possible value (q) of Q to the probability P(Q = q | E)
+    """
+    # Use the VE class to perform variable elimination 
     exact_infer = VE(gm=model)
     VE.max_display_level = -1
     return exact_infer.query(var=Q, obs=E, elim_order=ordering)
+
 
 def perform_approximate_inference(model: BeliefNetwork, Q:Variable, E: Dict[Variable, int], n_samples: int) -> Dict[int, float]:
     """
@@ -73,6 +83,8 @@ def main():
         ordering
     )
 
+
+
 if __name__ == "__main__":
     # 1. Load the bayesian network from the directory named "child"
     # 2. Compute P(Q | E) on the BN using exact inference (variable elimination)
@@ -87,7 +99,3 @@ if __name__ == "__main__":
     #   Report the average over 10 trials.
     # Find the average time taken by each of the 5 methods.
     main()
-
-
-
-
